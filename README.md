@@ -1,32 +1,43 @@
-# เว็บเช็กชื่อ (Check Name)
+# ระบบจัดการค่าปรับแก๊ง (Fine Management System)
 
-เว็บแอปเช็กชื่อ / เช็กชื่อเข้าเรียน ทำงานได้ทั้งคอมและมือถือ ไม่ต้องติดตั้งอะไร
+เว็บแอปหน้าเดียว (Single Page Web App) สำหรับบันทึกและจัดการค่าปรับ สร้างด้วย HTML + Tailwind CSS พร้อมไอคอน FontAwesome และ SweetAlert2
 
-## คุณสมบัติ
-- ➕ เพิ่มหัวข้อใหม่ได้ไม่จำกัด (ห้อง/คลาส/กิจกรรม)
-- 👤 เพิ่ม/ลบรายชื่อ และเช็กสถานะ มา / ขาด / ลา
-- 📊 สรุปยอดอัตโนมัติ
-- 🎲 สุ่มแบ่งกลุ่ม (สูงสุด 5 กลุ่ม)
-- 📨 ส่งผลเข้า Discord ได้ (แต่ละหัวข้อตั้ง Webhook แยกกันได้)
-- 💾 บันทึกข้อมูลอัตโนมัติในเครื่อง (localStorage)
+## 🚀 การใช้งาน
 
-## วิธีนำขึ้น GitHub Pages
+เปิดไฟล์ `index.html` ด้วยเบราว์เซอร์ได้เลย ไม่ต้องติดตั้งอะไรเพิ่ม
 
-### แบบง่าย (ผ่านเว็บ GitHub)
-1. ไปที่ https://github.com/new → ตั้งชื่อ repo เช่น `check-name` → Create repository
-2. ในหน้า repo → กด **Add file → Upload files** → ลากไฟล์ `index.html` (และ `README.md`) ลงไป → Commit changes
-3. ไปที่ **Settings → Pages** → ช่อง Branch เลือก `main` → โฟลเดอร์ `/ (root)` → Save
-4. รอสักครู่ เว็บจะออนไลน์ที่ `https://<username>.github.io/check-name/`
+## 🌐 เผยแพร่ด้วย GitHub Pages
 
-### แบบใช้ Git (คำสั่ง)
+### วิธีที่ 1: อัตโนมัติด้วย GitHub Actions (แนะนำ)
+
+โปรเจกต์นี้มีไฟล์ `.github/workflows/deploy.yml` มาให้แล้ว เพียงเข้าไปที่ **Settings → Pages → Source** แล้วเลือก **GitHub Actions** จากนั้นทุกครั้งที่ push ขึ้น `main` เว็บจะเดพลอยใหม่อัตโนมัติ
+
+### วิธีที่ 2: ตั้งค่าแบบเดิม
+
+1. ไปที่ **Settings → Pages**
+2. ที่หัวข้อ **Source** เลือก **Deploy from a branch** → Branch `main` → โฟลเดอร์ `/ (root)`
+3. กด **Save** แล้วรอสักครู่ เว็บจะออนไลน์ที่ `https://<username>.github.io/<repo-name>/`
+
+## 📦 วิธีอัปโหลดขึ้น GitHub (ผ่านคำสั่ง Git)
+
 ```bash
 git init
-git add index.html README.md
-git commit -m "Add check-name web app"
+git add .
+git commit -m "Initial commit: fine management system"
 git branch -M main
-git remote add origin https://github.com/<username>/check-name.git
+git remote add origin https://github.com/<username>/<repo-name>.git
 git push -u origin main
 ```
-จากนั้นเปิด GitHub Pages ใน Settings → Pages ตามขั้นตอนข้างบน
 
-> ℹ️ ไฟล์ต้องชื่อ `index.html` เท่านั้น GitHub Pages ถึงจะเปิดหน้าแรกให้อัตโนมัติ
+## 🛠 เทคโนโลยีที่ใช้
+
+- HTML5
+- Tailwind CSS (CDN)
+- FontAwesome 6
+- SweetAlert2
+- Choices.js
+- Google Fonts (Kanit)
+
+## 📄 License
+
+MIT
