@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เว็บเช็กชื่อ</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--pri:#4f6ef7;--pri-d:#3a56d4;--ok:#22c55e;--absent:#ef4444;--leave:#f59e0b;--line:#e5e8f0;--txt:#1f2937;--mut:#6b7280;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Tahoma,-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.5;}
+header{background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;padding:22px 16px;text-align:center;box-shadow:0 4px 14px rgba(79,110,247,.25);}
+header h1{font-size:1.5rem;}
+header p{opacity:.9;font-size:.9rem;margin-top:4px;}
+.wrap{max-width:900px;margin:0 auto;padding:16px;}
+.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.card h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.row{display:flex;gap:8px;flex-wrap:wrap;}
+input,select{padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.95rem;flex:1;min-width:120px;outline:none;font-family:inherit;}
+input:focus,select:focus{border-color:var(--pri);}
+btn,button{cursor:pointer;}
+button{padding:10px 16px;border:none;border-radius:10px;background:var(--pri);color:#fff;font-size:.95rem;font-weight:600;transition:.15s;font-family:inherit;}
+button:hover{background:var(--pri-d);}
+button.ghost{background:#eef1fb;color:var(--pri);}
+button.danger{background:#fee2e2;color:var(--absent);}
+button.sm{padding:6px 10px;font-size:.82rem;}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tab{padding:8px 14px;border-radius:999px;background:#eef1fb;color:var(--pri);cursor:pointer;font-weight:600;font-size:.9rem;border:1.5px solid transparent;display:flex;align-items:center;gap:6px;}
+.tab.active{background:var(--pri);color:#fff;}
+.tab .x{opacity:.7;font-weight:700;}
+.tab .x:hover{opacity:1;}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.stat{flex:1;min-width:80px;text-align:center;background:#f8f9ff;border-radius:12px;padding:10px;}
+.stat b{display:block;font-size:1.4rem;}
+.stat span{font-size:.78rem;color:var(--mut);}
+.stat.ok b{color:var(--ok);}.stat.ab b{color:var(--absent);}.stat.lv b{color:var(--leave);}
+ul{list-style:none;}
+.person{display:flex;align-items:center;gap:10px;padding:10px;border-bottom:1px solid var(--line);}
+.person:last-child{border-bottom:none;}
+.person .name{flex:1;font-weight:500;}
+.person .no{width:26px;height:26px;border-radius:50%;background:#eef1fb;color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;}
+.marks{display:flex;gap:6px;}
+.mark{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;}
+.mark.a-ok.on{background:var(--ok);border-color:var(--ok);}
+.mark.a-ab.on{background:var(--absent);border-color:var(--absent);}
+.mark.a-lv.on{background:var(--leave);border-color:var(--leave);}
+.empty{text-align:center;color:var(--mut);padding:24px;}
+.del{color:var(--absent);cursor:pointer;font-size:1.1rem;padding:4px 8px;}
+footer{text-align:center;color:var(--mut);font-size:.8rem;padding:16px;}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap;}
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 เว็บเช็กชื่อ</h1>
+  <p>เพิ่มชื่อ • สร้างหัวข้อใหม่ • เช็กการมาเรียน</p>
+</header>
+<div class="wrap">
+  <!-- หัวข้อ / Topics -->
+  <div class="card">
+    <h2>🗂️ หัวข้อ (ห้อง/คลาส/กิจกรรม)</h2>
+    <div id="tabs" class="tabs"></div>
+    <div class="row">
+      <input id="topicName" placeholder="เช่น ม.6/1 , ประชุมทีม ..." onkeydown="if(event.key==='Enter')addTopic()">
+      <button onclick="addTopic()">+ เพิ่มหัวข้อใหม่</button>
+    </div>
+  </div>
+
+  <!-- เนื้อหาหัวข้อ -->
+  <div id="content"></div>
+</div>
+<footer>ข้อมูลถูกบันทึกในเครื่องของคุณโดยอัตโนมัติ</footer>
+<script>
+const KEY='checkname_data_v1';
+let data={topics:[],active:null};
+
+function load(){
+  try{const s=localStorage.getItem(KEY);if(s)data=JSON.parse(s);}catch(e){}
+  if(!data.topics)data.topics=[];
+  if(data.topics.length&&!data.topics.find(t=>t.id===data.active))data.active=data.topics[0].id;
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function esc(s){return(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function addTopic(){
+  const el=document.getElementById('topicName');
+  const name=el.value.trim();
+  if(!name){el.focus();return;}
+  const t={id:uid(),name,people:[]};
+  data.topics.push(t);
+  data.active=t.id;
+  el.value='';
+  save();render();
+}
+function delTopic(id,ev){
+  ev.stopPropagation();
+  const t=data.topics.find(x=>x.id===id);
+  if(!confirm('ลบหัวข้อ “'+t.name+'” ?'))return;
+  data.topics=data.topics.filter(x=>x.id!==id);
+  if(data.active===id)data.active=data.topics[0]?data.topics[0].id:null;
+  save();render();
+}
+function setActive(id){data.active=id;save();render();}
+
+function addPerson(){
+  const t=cur();if(!t)return;
+  const el=document.getElementById('personName');
+  const name=el.value.trim();
+  if(!name){el.focus();return;}
+  t.people.push({id:uid(),name,status:''});
+  el.value='';el.focus();
+  save();render();
+}
+function delPerson(pid){
+  const t=cur();if(!t)return;
+  t.people=t.people.filter(p=>p.id!==pid);
+  save();render();
+}
+function mark(pid,st){
+  const t=cur();if(!t)return;
+  const p=t.people.find(x=>x.id===pid);
+  p.status=(p.status===st)?'':st;
+  save();render();
+}
+function clearMarks(){
+  const t=cur();if(!t)return;
+  if(!confirm('ล้างการเช็กทั้งหมดของหัวข้อนี้?'))return;
+  t.people.forEach(p=>p.status='');
+  save();render();
+}
+function cur(){return data.topics.find(t=>t.id===data.active);}
+
+function makeGroups(){
+  const t=cur();if(!t)return;
+  const n=parseInt(document.getElementById('groupCount').value)||5;
+  if(!t.people.length){alert('ยังไม่มีชื่อในห้องนี้');return;}
+  const arr=t.people.map(p=>p.name);
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  const g=Array.from({length:n},()=>[]);
+  arr.forEach((name,i)=>g[i%n].push(name));
+  t.groups={count:n,list:g};
+  save();render();
+}
+function clearGroups(){
+  const t=cur();if(!t)return;
+  delete t.groups;save();render();
+}
+
+function render(){
+  const tabs=document.getElementById('tabs');
+  tabs.innerHTML=data.topics.map(t=>
+    `<div class="tab ${t.id===data.active?'active':''}" onclick="setActive('${t.id}')">`+
+    `<span>${esc(t.name)}</span>`+
+    `<span class="x" onclick="delTopic('${t.id}',event)">✕</span></div>`
+  ).join('')||'<span class="empty" style="padding:4px">ยังไม่มีหัวข้อ — เพิ่มหัวข้อด้านล่าง</span>';
+
+  const c=document.getElementById('content');
+  const t=cur();
+  if(!t){c.innerHTML='';return;}
+  const ok=t.people.filter(p=>p.status==='ok').length;
+  const ab=t.people.filter(p=>p.status==='ab').length;
+  const lv=t.people.filter(p=>p.status==='lv').length;
+
+  c.innerHTML=`
+  <div class="card">
+    <h2>➕ เพิ่มชื่อ — ${esc(t.name)}</h2>
+    <div class="row">
+      <input id="personName" placeholder="พิมพ์ชื่อแล้วกด Enter" onkeydown="if(event.key==='Enter')addPerson()">
+      <button onclick="addPerson()">+ เพิ่ม</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><b>${t.people.length}</b><span>ทั้งหมด</span></div>
+      <div class="stat ok"><b>${ok}</b><span>มา</span></div>
+      <div class="stat ab"><b>${ab}</b><span>ขาด</span></div>
+      <div class="stat lv"><b>${lv}</b><span>ลา</span></div>
+    </div>
+    <div class="toolbar">
+      <b style="font-size:.95rem">รายชื่อ (${t.people.length})</b>
+      <div class="row" style="flex:0">
+        <button class="ghost sm" onclick="clearMarks()">ล้างการเช็ก</button>
+        <button class="sm" style="background:#5865F2" onclick="sendDiscord()">📨 ส่งเข้าดิส</button>
+      </div>
+    </div>
+    <ul id="list"></ul>
+  </div>
+  <div class="card">
+    <h2>👥 แบ่งกลุ่ม (สูงสุด 5 กลุ่ม)</h2>
+    <div class="row" style="align-items:center">
+      <span style="flex:0;white-space:nowrap;color:var(--mut);font-size:.9rem">จำนวนกลุ่ม</span>
+      <select id="groupCount" style="flex:0;min-width:70px">
+        <option>2</option><option>3</option><option>4</option><option selected>5</option>
+      </select>
+      <button onclick="makeGroups()">🎲 สุ่มแบ่งกลุ่ม</button>
+      <button class="ghost" onclick="clearGroups()">ล้าง</button>
+    </div>
+    <div id="groups"></div>
+  </div>
+  <div class="card">
+    <h2>🔗 ตั้งค่า Discord ของหัวข้อนี้</h2>
+    <p style="font-size:.83rem;color:var(--mut);margin-bottom:8px">แต่ละหัวข้อตั้ง Webhook แยกกันได้ → ส่งเข้าคนละช่องใน Discord</p>
+    <div class="row">
+      <input id="webhook" placeholder="วาง Discord Webhook URL ที่นี่" value="${esc(t.webhook||'')}">
+      <button class="ghost" onclick="saveWebhook()">บันทึก</button>
+    </div>
+    <p style="font-size:.78rem;color:var(--mut);margin-top:8px">ℹ️ วิธีหา Webhook: ใน Discord → ตั้งค่าช่อง (รูปเฟือง) → Integrations → Webhooks → New Webhook → Copy Webhook URL</p>
+  </div>`;
+
+  const list=document.getElementById('list');
+  if(!t.people.length){list.innerHTML='<li class="empty">ยังไม่มีชื่อ — เพิ่มชื่อด้านบน</li>';return;}
+  list.innerHTML=t.people.map((p,i)=>`
+    <li class="person">
+      <span class="no">${i+1}</span>
+      <span class="name">${esc(p.name)}</span>
+      <div class="marks">
+        <div class="mark a-ok ${p.status==='ok'?'on':''}" title="มา" onclick="mark('${p.id}','ok')">✔</div>
+        <div class="mark a-ab ${p.status==='ab'?'on':''}" title="ขาด" onclick="mark('${p.id}','ab')">✖</div>
+        <div class="mark a-lv ${p.status==='lv'?'on':''}" title="ลา" onclick="mark('${p.id}','lv')">／</div>
+      </div>
+      <span class="del" title="ลบ" onclick="delPerson('${p.id}')">🗑</span>
+    </li>`).join('');
+
+  const gEl=document.getElementById('groups');
+  if(t.groups&&t.groups.list){
+    const sel=document.getElementById('groupCount');
+    if(sel)sel.value=t.groups.count;
+    const colors=['#4f6ef7','#22c55e','#f59e0b','#ef4444','#8b5cf6'];
+    gEl.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:12px">'+
+      t.groups.list.map((mem,i)=>`
+        <div style="border:1.5px solid var(--line);border-radius:12px;overflow:hidden">
+          <div style="background:${colors[i%5]};color:#fff;padding:8px 10px;font-weight:700;font-size:.9rem">กลุ่มที่ ${i+1} <span style="opacity:.85;font-weight:500">(${mem.length})</span></div>
+          <ul style="padding:6px 4px">${mem.map(nm=>`<li style="padding:5px 10px;font-size:.9rem">• ${esc(nm)}</li>`).join('')||'<li style="padding:8px 10px;color:var(--mut);font-size:.85rem">-</li>'}</ul>
+        </div>`).join('')+'</div>';
+  }else{
+    gEl.innerHTML='<p class="empty" style="font-size:.9rem">กด “สุ่มแบ่งกลุ่ม” เพื่อจัดคนเข้ากลุ่มแบบสุ่ม</p>';
+  }
+}
+
+function exportTxt(){
+  const t=cur();if(!t)return;
+  const m={ok:'มา',ab:'ขาด',lv:'ลา','':'-'};
+  let s='หัวข้อ: '+t.name+'\n'+new Date().toLocaleString('th-TH')+'\n\n';
+  t.people.forEach((p,i)=>{s+=(i+1)+'. '+p.name+' ['+m[p.status]+']\n';});
+  const blob=new Blob([s],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='เช็กชื่อ_'+t.name+'.txt';
+  a.click();
+}
+
+function saveWebhook(){
+  const t=cur();if(!t)return;
+  t.webhook=document.getElementById('webhook').value.trim();
+  save();
+  alert(t.webhook?'✅ บันทึก Webhook ของหัวข้อนี้แล้ว':'ล้าง Webhook แล้ว');
+}
+
+function buildReport(t){
+  const m={ok:'✅ มา',ab:'❌ ขาด',lv:'🟡 ลา','':'➖ ยังไม่เช็ก'};
+  const ok=t.people.filter(p=>p.status==='ok').length;
+  const ab=t.people.filter(p=>p.status==='ab').length;
+  const lv=t.people.filter(p=>p.status==='lv').length;
+  let s='📋 **เช็กชื่อ: '+t.name+'**\n';
+  s+='🕒 '+new Date().toLocaleString('th-TH')+'\n';
+  s+='👥 ทั้งหมด '+t.people.length+' • ✅ มา '+ok+' • ❌ ขาด '+ab+' • 🟡 ลา '+lv+'\n';
+  s+='──────────\n';
+  t.people.forEach((p,i)=>{s+='`'+String(i+1).padStart(2,' ')+'.` '+p.name+' — '+m[p.status]+'\n';});
+  if(t.groups&&t.groups.list){
+    s+='\n👥 **แบ่งกลุ่ม ('+t.groups.count+' กลุ่ม)**\n';
+    t.groups.list.forEach((mem,i)=>{s+='**กลุ่ม '+(i+1)+':** '+(mem.join(', ')||'-')+'\n';});
+  }
+  return s;
+}
+
+async function sendDiscord(){
+  const t=cur();if(!t)return;
+  const url=(t.webhook||'').trim();
+  if(!url){alert('⚠️ หัวข้อนี้ยังไม่ได้ตั้งค่า Discord Webhook URL — กรุณาใส่ที่ช่อง “ตั้งค่า Discord” ด้านล่าง');return;}
+  if(!/discord(app)?\.com\/api\/webhooks\//.test(url)){alert('⚠️ URL นี้ไม่ใช่ Discord Webhook URL ที่ถูกต้อง');return;}
+  if(!t.people.length){alert('ยังไม่มีชื่อในห้องนี้');return;}
+  const btns=document.querySelectorAll('button');
+  const report=buildReport(t);
+  const chunks=splitMsg(report,1900);
+  try{
+    for(const c of chunks){
+      const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:c})});
+      if(!res.ok)throw new Error('HTTP '+res.status);
+    }
+    alert('✅ ส่งเข้า Discord เรียบร้อยแล้ว!');
+  }catch(e){
+    alert('❌ ส่งไม่สำเร็จ: '+e.message+'\nตรวจสอบ Webhook URL หรือการเชื่อมต่ออินเทอร์เน็ต');
+  }
+}
+
+function splitMsg(s,max){
+  const lines=s.split('\n');const out=[];let buf='';
+  for(const ln of lines){
+    if((buf+ln+'\n').length>max){out.push(buf);buf='';}
+    buf+=ln+'\n';
+  }
+  if(buf.trim())out.push(buf);
+  return out.length?out:[s];
+}
+
+load();
+if(!data.topics.length){
+  data.topics.push({id:uid(),name:'หัวข้อตัวอย่าง',people:[
+    {id:uid(),name:'สมชาย ใจดี',status:'ok'},
+    {id:uid(),name:'สมหญิง ตั้งใจ',status:''}
+  ]});
+  data.active=data.topics[0].id;save();
+}
+render();
+</script>
+</body>
+</html>
