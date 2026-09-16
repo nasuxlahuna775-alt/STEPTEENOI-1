@@ -1,528 +1,349 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบบันทึกค่าปรับแก๊ง - STEPTEENOI</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts (Kanit) -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Choices.js -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { kanit: ['Kanit', 'sans-serif'] },
-                    colors: {
-                        darkBg: '#0f172a',
-                        cardBg: '#1e293b',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .choices__inner {
-            background-color: rgb(15 23 42 / 0.6) !important;
-            border: 1px solid rgb(51 65 85) !important;
-            border-radius: 0.75rem !important;
-            color: #f8fafc !important;
-            min-height: 44px !important;
-            padding: 4px 12px !important;
-            font-family: 'Kanit', sans-serif !important;
-            font-size: 0.875rem !important;
-        }
-        .choices__list--dropdown {
-            background-color: #1e293b !important;
-            border: 1px solid rgb(51 65 85) !important;
-            border-radius: 0.75rem !important;
-            font-family: 'Kanit', sans-serif !important;
-            color: #f8fafc !important;
-        }
-        .choices__item--choice { font-size: 0.875rem !important; }
-        .choices__item--choice.is-highlighted { background-color: #ec4899 !important; }
-        .choices__input { background-color: transparent !important; color: #f8fafc !important; font-family: 'Kanit', sans-serif !important; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เว็บเช็กชื่อ - Modern Attendance</title>
+<!-- Google Fonts (Kanit)[cite: 1] -->
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- FontAwesome Icons[cite: 1] -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--bg:#f8fafc;--card:#ffffff;--pri:#6366f1;--pri-d:#4f46e5;--ok:#10b981;--absent:#ef4444;--leave:#f59e0b;--line:#e2e8f0;--txt:#0f172a;--mut:#64748b;--radius:16px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Kanit',sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;}
+header{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:32px 20px;text-align:center;box-shadow:0 10px 25px -5px rgba(99,102,241,.25);}
+header h1{font-size:1.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;}
+header p{opacity:.9;font-size:.95rem;margin-top:6px;font-weight:300;}
+
+.wrap{max-width:920px;margin:0 auto;padding:24px 16px;}
+.card{background:var(--card);border-radius:var(--radius);padding:22px;margin-bottom:20px;box-shadow:0 4px 20px -2px rgba(0,0,0,.04);border:1px solid rgba(226,232,240,.8);}
+.card h2{font-size:1.15rem;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-weight:600;color:#1e293b;}
+
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+input,select{padding:12px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:.95rem;flex:1;min-width:140px;outline:none;font-family:inherit;transition:.2s;background:#fcfdff;}
+input:focus,select:focus{border-color:var(--pri);box-shadow:0 0 0 4px rgba(99,102,241,.12);background:#fff;}
+
+button{cursor:pointer;padding:12px 20px;border:none;border-radius:12px;background:var(--pri);color:#fff;font-size:.95rem;font-weight:600;transition:.2s;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(99,102,241,.2);}
+button:hover{background:var(--pri-d);transform:translateY(-1px);box-shadow:0 6px 16px rgba(99,102,241,.3);}
+button:active{transform:translateY(0);}
+button.ghost{background:#e0e7ff;color:var(--pri);box-shadow:none;}
+button.ghost:hover{background:#c7d2fe;}
+button.danger{background:#fee2e2;color:var(--absent);box-shadow:none;}
+button.danger:hover{background:#fecaca;}
+button.sm{padding:8px 14px;font-size:.85rem;border-radius:10px;}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.tab{padding:10px 18px;border-radius:12px;background:#f1f5f9;color:var(--mut);cursor:pointer;font-weight:600;font-size:.9rem;border:1.5px solid transparent;display:flex;align-items:center;gap:8px;transition:.2s;}
+.tab:hover{background:#e2e8f0;color:var(--txt);}
+.tab.active{background:var(--pri);color:#fff;box-shadow:0 4px 12px rgba(99,102,241,.25);}
+.tab .x{opacity:.6;font-weight:700;padding:2px 6px;border-radius:6px;transition:.15s;}
+.tab .x:hover{opacity:1;background:rgba(0,0,0,.15);}
+
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.stat{flex:1;min-width:90px;text-align:center;background:#f8fafc;border-radius:14px;padding:14px 10px;border:1px solid var(--line);}
+.stat b{display:block;font-size:1.6rem;font-weight:700;}
+.stat span{font-size:.8rem;color:var(--mut);font-weight:500;}
+.stat.ok{background:#ecfdf5;border-color:#a7f3d0;}.stat.ok b{color:var(--ok);}
+.stat.ab{background:#fef2f2;border-color:#fecaca;}.stat.ab b{color:var(--absent);}
+.stat.lv{background:#fffbeb;border-color:#fde68a;}.stat.lv b{color:var(--leave);}
+
+ul{list-style:none;}
+.person{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);transition:.15s;border-radius:10px;}
+.person:hover{background:#f8fafc;}
+.person:last-child{border-bottom:none;}
+.person .name{flex:1;font-weight:500;font-size:1rem;}
+.person .no{width:32px;height:32px;border-radius:10px;background:#e0e7ff;color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;}
+
+.marks{display:flex;gap:8px;}
+.mark{width:40px;height:40px;border-radius:12px;border:1.5px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:.2s;color:var(--mut);}
+.mark:hover{border-color:var(--pri);transform:scale(1.05);}
+.mark.a-ok.on{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:0 4px 10px rgba(16,185,129,.3);}
+.mark.a-ab.on{background:var(--absent);border-color:var(--absent);color:#fff;box-shadow:0 4px 10px rgba(239,68,68,.3);}
+.mark.a-lv.on{background:var(--leave);border-color:var(--leave);color:#fff;box-shadow:0 4px 10px rgba(245,158,11,.3);}
+
+.empty{text-align:center;color:var(--mut);padding:32px;font-size:.95rem;}
+.del{color:var(--mut);cursor:pointer;font-size:1rem;padding:8px;border-radius:8px;transition:.2s;}
+.del:hover{color:var(--absent);background:#fee2e2;}
+
+footer{text-align:center;color:var(--mut);font-size:.85rem;padding:24px 0;}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+
+/* ===== Custom Modal (confirm) ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-overlay.show{opacity:1;pointer-events:auto;}
+.modal-box{background:#fff;border-radius:var(--radius);padding:26px 24px;max-width:380px;width:calc(100% - 40px);box-shadow:0 20px 50px -10px rgba(0,0,0,.3);transform:translateY(12px) scale(.97);transition:transform .2s;}
+.modal-overlay.show .modal-box{transform:translateY(0) scale(1);}
+.modal-box .m-icon{width:56px;height:56px;border-radius:50%;background:#fef3c7;color:var(--leave);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 14px;}
+.modal-box.danger .m-icon{background:#fee2e2;color:var(--absent);}
+.modal-box .m-msg{text-align:center;font-size:1.02rem;font-weight:500;color:#1e293b;margin-bottom:20px;line-height:1.5;}
+.modal-box .m-actions{display:flex;gap:10px;}
+.modal-box .m-actions button{flex:1;}
+
+/* ===== Toast ===== */
+#toastWrap{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:1100;display:flex;flex-direction:column;gap:10px;width:calc(100% - 40px);max-width:420px;pointer-events:none;}
+.toast{background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 10px 30px -6px rgba(0,0,0,.18);display:flex;align-items:center;gap:12px;font-size:.92rem;font-weight:500;border-left:4px solid var(--pri);transform:translateY(-16px);opacity:0;transition:.25s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left-color:var(--ok);} .toast.ok i{color:var(--ok);}
+.toast.err{border-left-color:var(--absent);} .toast.err i{color:var(--absent);}
+.toast.warn{border-left-color:var(--leave);} .toast.warn i{color:var(--leave);}
+.toast.info i{color:var(--pri);}
+.toast i{font-size:1.15rem;flex-shrink:0;}
+</style>
 </head>
-<body class="font-kanit bg-darkBg text-slate-100 min-h-screen flex flex-col items-center py-10 px-4 selection:bg-pink-500 selection:text-white">
-
-    <!-- Header & Admin Toggle Button -->
-    <div class="w-full max-w-4xl flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-bold tracking-wider bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-                ระบบจัดการค่าปรับแก๊ง
-            </h1>
-            <p class="text-slate-400 text-xs mt-0.5">เลือกบ้าน • ล็อกรายชื่อแยกอิสระ • บันทึก Realtime</p>
-        </div>
-        <div class="flex space-x-2">
-            <!-- ปุ่มจัดการสมาชิก (เฉพาะแอดมิน) -->
-            <button id="manageMemberBtn" onclick="openMemberModal()" class="hidden px-3.5 py-2.5 rounded-xl bg-purple-600/20 border border-purple-500/50 text-purple-300 hover:bg-purple-600 hover:text-white text-xs md:text-sm font-medium transition-all flex items-center shadow-lg backdrop-blur-md">
-                <i class="fa-solid fa-users-gear mr-2"></i>จัดการสมาชิก
-            </button>
-            <!-- ปุ่มเปิดโหมดแอดมิน -->
-            <button id="adminToggleBtn" onclick="openAdminModal()" 
-                class="px-4 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-white hover:border-pink-500 text-xs md:text-sm font-medium transition-all flex items-center shadow-lg backdrop-blur-md">
-                <i id="adminIcon" class="fa-solid fa-lock mr-2 text-pink-400"></i><span id="adminBtnText">โหมดแอดมิน</span>
-            </button>
-        </div>
+<body>
+<header>
+  <h1><i class="fa-solid fa-clipboard-user"></i> เว็บเช็กชื่อออนไลน์</h1>
+  <p>จัดการรายชื่อ • สร้างหัวข้อห้อง • เช็กชื่อสะดวกรวดเร็ว</p>
+</header>
+<div class="wrap">
+  <!-- หัวข้อ / Topics[cite: 1] -->
+  <div class="card">
+    <h2><i class="fa-solid fa-folder-open text-indigo-500"></i> หัวข้อ (ห้อง / คลาส / กิจกรรม)[cite: 1]</h2>
+    <div id="tabs" class="tabs"></div>
+    <div class="row">
+      <input id="topicName" placeholder="เช่น ม.6/1 , ประชุมทีม ..." onkeydown="if(event.key==='Enter')addTopic()">
+      <button onclick="addTopic()"><i class="fa-solid fa-plus"></i> เพิ่มหัวข้อใหม่</button>
     </div>
+  </div>
 
-    <!-- Main Grid Container -->
-    <div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- ฟอร์มบันทึกค่าปรับ -->
-        <div class="lg:col-span-1 bg-cardBg/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-2xl h-fit">
-            <h2 class="text-lg font-semibold text-slate-200 mb-4 flex items-center">
-                <i class="fa-solid fa-pen-to-square text-pink-400 mr-2"></i>บันทึกค่าปรับใหม่
-            </h2>
-            
-            <form id="fineForm" class="space-y-4">
-                <!-- เลือกบ้าน -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-2">เลือกบ้านที่กระทำผิด</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="house" value="บ้านที่ 1" class="peer sr-only" required onchange="updateMemberDropdown()">
-                            <div class="text-center py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 peer-checked:border-pink-500 peer-checked:bg-pink-500/10 peer-checked:text-pink-400 text-sm font-medium transition-all">บ้าน 1</div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="house" value="บ้านที่ 2" class="peer sr-only" onchange="updateMemberDropdown()">
-                            <div class="text-center py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 peer-checked:border-pink-500 peer-checked:bg-pink-500/10 peer-checked:text-pink-400 text-sm font-medium transition-all">บ้าน 2</div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="house" value="บ้านที่ 3" class="peer sr-only" onchange="updateMemberDropdown()">
-                            <div class="text-center py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 peer-checked:border-pink-500 peer-checked:bg-pink-500/10 peer-checked:text-pink-400 text-sm font-medium transition-all">บ้าน 3</div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="house" value="บ้านที่ 4" class="peer sr-only" onchange="updateMemberDropdown()">
-                            <div class="text-center py-2.5 rounded-xl bg-slate-900/60 border border-slate-700 peer-checked:border-pink-500 peer-checked:bg-pink-500/10 peer-checked:text-pink-400 text-sm font-medium transition-all">บ้าน 4</div>
-                        </label>
-                    </div>
-                </div>
+  <!-- เนื้อหาหัวข้อ[cite: 1] -->
+  <div id="content"></div>
+</div>
+<footer><i class="fa-solid fa-shield-halved"></i> ข้อมูลถูกบันทึกในเครื่องของคุณโดยอัตโนมัติ (LocalStorage)[cite: 1]</footer>
 
-                <!-- เลือกชื่อสมาชิก (Dropdown แยกตามบ้าน) -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">เลือกชื่อสมาชิก</label>
-                    <select id="characterSelect" required class="w-full">
-                        <option value="" disabled selected>-- กรุณาเลือกบ้านก่อน --</option>
-                    </select>
-                </div>
-
-                <!-- เหตุผล -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">เหตุผล / ข้อหา</label>
-                    <textarea id="reason" rows="2" placeholder="ระบุความผิด..." required
-                        class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-all resize-none"></textarea>
-                </div>
-
-                <!-- จำนวนเงิน -->
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">จำนวนเงินค่าปรับ ($)</label>
-                    <input type="number" id="amount" placeholder="0" min="0" required
-                        class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all font-semibold">
-                </div>
-
-                <!-- ปุ่มส่ง -->
-                <button type="submit" id="submitBtn"
-                    class="w-full py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 font-semibold text-sm text-white shadow-lg shadow-pink-500/25 hover:opacity-95 active:scale-[0.98] transition-all">
-                    <i class="fa-solid fa-paper-plane mr-2"></i>บันทึกค่าปรับ
-                </button>
-            </form>
-        </div>
-
-        <!-- รายการประวัติและสรุปยอด -->
-        <div class="lg:col-span-2 space-y-6">
-            
-            <!-- สรุปยอดรวมแต่ละบ้าน -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div class="bg-cardBg/60 border border-slate-800 rounded-2xl p-4 text-center shadow-lg">
-                    <span class="text-xs text-slate-400">บ้านที่ 1</span>
-                    <h3 id="totalHouse1" class="text-lg font-bold text-pink-400 mt-1">$0</h3>
-                </div>
-                <div class="bg-cardBg/60 border border-slate-800 rounded-2xl p-4 text-center shadow-lg">
-                    <span class="text-xs text-slate-400">บ้านที่ 2</span>
-                    <h3 id="totalHouse2" class="text-lg font-bold text-pink-400 mt-1">$0</h3>
-                </div>
-                <div class="bg-cardBg/60 border border-slate-800 rounded-2xl p-4 text-center shadow-lg">
-                    <span class="text-xs text-slate-400">บ้านที่ 3</span>
-                    <h3 id="totalHouse3" class="text-lg font-bold text-pink-400 mt-1">$0</h3>
-                </div>
-                <div class="bg-cardBg/60 border border-slate-800 rounded-2xl p-4 text-center shadow-lg">
-                    <span class="text-xs text-slate-400">บ้านที่ 4</span>
-                    <h3 id="totalHouse4" class="text-lg font-bold text-pink-400 mt-1">$0</h3>
-                </div>
-            </div>
-
-            <!-- ประวัติการปรับ Realtime -->
-            <div class="bg-cardBg/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-2xl">
-                <h2 class="text-lg font-semibold text-slate-200 mb-4 flex items-center justify-between">
-                    <span><i class="fa-solid fa-clock-rotate-left mr-2 text-purple-400"></i>ประวัติการปรับทั้งหมด</span>
-                    <span id="loadingStatus" class="text-xs text-slate-400 font-normal">กำลังเชื่อมต่อ Firebase...</span>
-                </h2>
-                
-                <div id="historyList" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
-                    <div class="text-center py-8 text-slate-500 text-sm">ยังไม่มีข้อมูลค่าปรับในระบบ</div>
-                </div>
-            </div>
-
-        </div>
-
+<!-- Custom modal + toast containers -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <div class="m-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="m-msg" id="modalMsg"></div>
+    <div class="m-actions">
+      <button class="ghost" id="modalCancel"><i class="fa-solid fa-xmark"></i> ยกเลิก</button>
+      <button id="modalOk"><i class="fa-solid fa-check"></i> ตกลง</button>
     </div>
+  </div>
+</div>
+<div id="toastWrap"></div>
 
-    <!-- Modal จัดการสมาชิกแก๊ง (เพิ่ม/ลบรายชื่อแยกตามบ้าน) -->
-    <div id="memberModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-cardBg border border-slate-700 rounded-3xl p-6 w-full max-w-lg shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-700/60 pb-3">
-                <h3 class="text-lg font-bold text-slate-100 flex items-center">
-                    <i class="fa-solid fa-users-gear text-purple-400 mr-2"></i>จัดการรายชื่อสมาชิกแยกตามบ้าน
-                </h3>
-                <button onclick="closeMemberModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <!-- ฟอร์มเพิ่มสมาชิกใหม่ -->
-            <form id="addMemberForm" onsubmit="addNewMember(event)" class="space-y-3 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">เลือกบ้าน</label>
-                        <select id="targetHouse" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
-                            <option value="บ้านที่ 1">บ้านที่ 1</option>
-                            <option value="บ้านที่ 2">บ้านที่ 2</option>
-                            <option value="บ้านที่ 3">บ้านที่ 3</option>
-                            <option value="บ้านที่ 4">บ้านที่ 4</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-slate-300 mb-1">ชื่อตัวละคร / Discord ID</label>
-                        <input type="text" id="newMemberName" placeholder="ระบุชื่อ..." required
-                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
-                    </div>
-                </div>
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow transition-all">
-                    <i class="fa-solid fa-user-plus mr-1"></i>เพิ่มสมาชิกเข้าบ้าน
-                </button>
-            </form>
+<script>
+const KEY='checkname_data_v1';
+let data={topics:[],active:null};
 
-            <!-- รายชื่อสมาชิกที่มีอยู่ -->
-            <div>
-                <h4 class="text-xs font-semibold text-slate-400 mb-2">รายชื่อสมาชิกปัจจุบันในระบบ</h4>
-                <div id="memberManagementList" class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                    <!-- รายชื่อจะแสดงที่นี่ -->
-                </div>
-            </div>
-        </div>
+/* ===== Custom confirm modal (Promise-based) ===== */
+function confirmModal(msg,opts){
+  opts=opts||{};
+  return new Promise(resolve=>{
+    const ov=document.getElementById('modalOverlay');
+    const box=document.getElementById('modalBox');
+    document.getElementById('modalMsg').textContent=msg;
+    box.classList.toggle('danger',!!opts.danger);
+    box.querySelector('.m-icon i').className=opts.danger?'fa-solid fa-trash-can':'fa-solid fa-triangle-exclamation';
+    const okBtn=document.getElementById('modalOk');
+    okBtn.className=opts.danger?'danger':'';
+    okBtn.innerHTML=(opts.danger?'<i class="fa-solid fa-trash-can"></i> ':'<i class="fa-solid fa-check"></i> ')+(opts.okText||'ตกลง');
+    ov.classList.add('show');
+    function close(val){ov.classList.remove('show');okBtn.onclick=null;document.getElementById('modalCancel').onclick=null;ov.onclick=null;resolve(val);}
+    okBtn.onclick=()=>close(true);
+    document.getElementById('modalCancel').onclick=()=>close(false);
+    ov.onclick=e=>{if(e.target===ov)close(false);};
+  });
+}
+
+/* ===== Toast ===== */
+function toast(msg,type){
+  type=type||'info';
+  const icons={ok:'fa-circle-check',err:'fa-circle-xmark',warn:'fa-triangle-exclamation',info:'fa-circle-info'};
+  const wrap=document.getElementById('toastWrap');
+  const el=document.createElement('div');
+  el.className='toast '+type;
+  el.innerHTML='<i class="fa-solid '+(icons[type]||icons.info)+'"></i><span></span>';
+  el.querySelector('span').textContent=msg;
+  wrap.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),300);},3200);
+}
+
+function load(){
+  try{const s=localStorage.getItem(KEY);if(s)data=JSON.parse(s);}catch(e){}
+  if(!data.topics)data.topics=[];
+  if(data.topics.length&&!data.topics.find(t=>t.id===data.active))data.active=data.topics[0].id;
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function esc(s){return(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function addTopic(){
+  const el=document.getElementById('topicName');
+  const name=el.value.trim();
+  if(!name){el.focus();return;}
+  const t={id:uid(),name,people:[]};
+  data.topics.push(t);
+  data.active=t.id;
+  el.value='';
+  save();render();
+}
+async function delTopic(id,ev){
+  ev.stopPropagation();
+  const t=data.topics.find(x=>x.id===id);
+  if(!await confirmModal('ต้องการลบหัวข้อ “'+t.name+'” ใช่หรือไม่?',{danger:true,okText:'ลบ'}))return;
+  data.topics=data.topics.filter(x=>x.id!==id);
+  if(data.active===id)data.active=data.topics[0]?data.topics[0].id:null;
+  save();render();
+  toast('ลบหัวข้อเรียบร้อยแล้ว','ok');
+}
+function setActive(id){data.active=id;save();render();}
+
+function addPerson(){
+  const t=cur();if(!t)return;
+  const el=document.getElementById('personName');
+  const name=el.value.trim();
+  if(!name){el.focus();return;}
+  t.people.push({id:uid(),name,status:''});
+  el.value='';el.focus();
+  save();render();
+}
+function delPerson(pid){
+  const t=cur();if(!t)return;
+  t.people=t.people.filter(p=>p.id!==pid);
+  save();render();
+}
+function mark(pid,st){
+  const t=cur();if(!t)return;
+  const p=t.people.find(x=>x.id===pid);
+  p.status=(p.status===st)?'':st;
+  save();render();
+}
+async function clearMarks(){
+  const t=cur();if(!t)return;
+  if(!await confirmModal('ล้างสถานะการเช็กทั้งหมดในหัวข้อนี้?',{danger:true,okText:'ล้าง'}))return;
+  t.people.forEach(p=>p.status='');
+  save();render();
+  toast('ล้างสถานะการเช็กเรียบร้อยแล้ว','ok');
+}
+function cur(){return data.topics.find(t=>t.id===data.active);}
+
+function render(){
+  const tabs=document.getElementById('tabs');
+  tabs.innerHTML=data.topics.map(t=>
+    `<div class="tab ${t.id===data.active?'active':''}" onclick="setActive('${t.id}')">`+
+    `<span><i class="fa-solid fa-bookmark" style="font-size:0.8rem;opacity:0.8"></i> ${esc(t.name)}</span>`+
+    `<span class="x" onclick="delTopic('${t.id}',event)"><i class="fa-solid fa-xmark"></i></span></div>`
+  ).join('')||'<span class="empty" style="padding:4px;color:var(--mut);">ยังไม่มีหัวข้อ — สร้างหัวข้อใหม่ด้านล่างได้เลย</span>';
+
+  const c=document.getElementById('content');
+  const t=cur();
+  if(!t){c.innerHTML='';return;}
+  const ok=t.people.filter(p=>p.status==='ok').length;
+  const ab=t.people.filter(p=>p.status==='ab').length;
+  const lv=t.people.filter(p=>p.status==='lv').length;
+
+  c.innerHTML=`
+  <div class="card">
+    <h2><i class="fa-solid fa-user-plus text-indigo-500"></i> เพิ่มรายชื่อ — ${esc(t.name)}</h2>
+    <div class="row">
+      <input id="personName" placeholder="พิมพ์ชื่อ-นามสกุล แล้วกด Enter" onkeydown="if(event.key==='Enter')addPerson()">
+      <button onclick="addPerson()"><i class="fa-solid fa-plus"></i> เพิ่มรายชื่อ</button>
     </div>
-
-    <!-- Modal ใส่รหัสผ่าน Admin -->
-    <div id="adminModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-cardBg border border-slate-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4">
-            <div class="text-center">
-                <div class="inline-block p-3 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400 mb-2">
-                    <i class="fa-solid fa-shield-halved text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-slate-100">ยืนยันตัวตนผู้ดูแลระบบ</h3>
-                <p class="text-xs text-slate-400 mt-1">กรุณากรอกรหัสผ่านเพื่อเปิดโหมดแอดมิน</p>
-            </div>
-            <form id="adminLoginForm" onsubmit="verifyAdmin(event)" class="space-y-3">
-                <input type="password" id="adminPasswordInput" placeholder="รหัสผ่านแอดมิน..." required autofocus
-                    class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-pink-500">
-                <div class="flex space-x-2">
-                    <button type="button" onclick="closeAdminModal()"
-                        class="w-1/2 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-sm font-medium hover:bg-slate-700 transition-all">ยกเลิก</button>
-                    <button type="submit"
-                        class="w-1/2 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-medium shadow-md hover:opacity-90 transition-all">ยืนยัน</button>
-                </div>
-            </form>
-        </div>
+  </div>
+  <div class="card">
+    <div class="stats">
+      <div class="stat"><b>${t.people.length}</b><span>ทั้งหมด</span></div>
+      <div class="stat ok"><b>${ok}</b><span>มาเรียน</span></div>
+      <div class="stat ab"><b>${ab}</b><span>ขาดเรียน</span></div>
+      <div class="stat lv"><b>${lv}</b><span>ลา</span></div>
     </div>
+    <div class="toolbar">
+      <b style="font-size:1rem;color:#334155"><i class="fa-solid fa-users"></i> รายชื่อสมาชิก (${t.people.length})</b>
+      <div class="row" style="flex:0">
+        <button class="ghost sm" onclick="clearMarks()"><i class="fa-solid fa-rotate-right"></i> รีเซ็ตสถานะ</button>
+        <button class="sm" style="background:#5865F2" onclick="sendDiscord()"><i class="fa-brands fa-discord"></i> ส่งเข้า Discord</button>
+      </div>
+    </div>
+    <ul id="list"></ul>
+  </div>
+  <div class="card">
+    <h2><i class="fa-brands fa-discord text-indigo-500"></i> ตั้งค่า Discord Webhook</h2>
+    <p style="font-size:.85rem;color:var(--mut);margin-bottom:10px">แต่ละหัวข้อสามารถตั้ง Webhook แยกกันเพื่อส่งเข้าคนละห้อง Discord ได้[cite: 1]</p>
+    <div class="row">
+      <input id="webhook" placeholder="วาง Discord Webhook URL ที่นี่" value="${esc(t.webhook||'')}">
+      <button class="ghost" onclick="saveWebhook()"><i class="fa-solid fa-floppy-disk"></i> บันทึก</button>
+    </div>
+    <p style="font-size:.8rem;color:var(--mut);margin-top:8px">ℹ️ วิธีหา Webhook: Discord Channel Settings → Integrations → Webhooks → New Webhook → Copy URL[cite: 1]</p>
+  </div>`;
 
-    <!-- Firebase SDK & Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, remove, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+  const list=document.getElementById('list');
+  if(!t.people.length){list.innerHTML='<li class="empty"><i class="fa-regular fa-folder-open" style="font-size:2rem;margin-bottom:8px;display:block"></i>ยังไม่มีรายชื่อ — เพิ่มชื่อสมาชิกด้านบนได้เลย</li>';return;}
+  list.innerHTML=t.people.map((p,i)=>`
+    <li class="person">
+      <span class="no">${i+1}</span>
+      <span class="name">${esc(p.name)}</span>
+      <div class="marks">
+        <div class="mark a-ok ${p.status==='ok'?'on':''}" title="มาเรียน" onclick="mark('${p.id}','ok')"><i class="fa-solid fa-check"></i></div>
+        <div class="mark a-ab ${p.status==='ab'?'on':''}" title="ขาดเรียน" onclick="mark('${p.id}','ab')"><i class="fa-solid fa-xmark"></i></div>
+        <div class="mark a-lv ${p.status==='lv'?'on':''}" title="ลา" onclick="mark('${p.id}','lv')"><i class="fa-solid fa-solid fa-clock"></i></div>
+      </div>
+      <span class="del" title="ลบรายชื่อ" onclick="delPerson('${p.id}')"><i class="fa-solid fa-trash-can"></i></span>
+    </li>`).join('');
+}
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBwKXYJji4qQNoOvhcqpdBWHdpPLQ4sXJ0",
-            authDomain: "tarsaray1.firebaseapp.com",
-            databaseURL: "https://tarsaray1-default-rtdb.firebaseio.com",
-            projectId: "tarsaray1",
-            storageBucket: "tarsaray1.firebasestorage.app",
-            messagingSenderId: "782765725846",
-            appId: "1:782765725846:web:d645224c9942a0075acab7",
-            measurementId: "G-WF8T4DSX5D"
-        };
+function saveWebhook(){
+  const t=cur();if(!t)return;
+  t.webhook=document.getElementById('webhook').value.trim();
+  save();
+  toast(t.webhook?'บันทึก Discord Webhook เรียบร้อยแล้ว':'ล้าง Webhook เรียบร้อยแล้ว','ok');
+}
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const analytics = getAnalytics(app);
+function buildReport(t){
+  const m={ok:'✅ มา',ab:'❌ ขาด',lv:'🟡 ลา','':'➖ ยังไม่เช็ก'};
+  const ok=t.people.filter(p=>p.status==='ok').length;
+  const ab=t.people.filter(p=>p.status==='ab').length;
+  const lv=t.people.filter(p=>p.status==='lv').length;
+  let s='📋 **รายงานการเช็กชื่อ: '+t.name+'**\n';
+  s+='🕒 '+new Date().toLocaleString('th-TH')+'\n';
+  s+='👥 ทั้งหมด '+t.people.length+' • ✅ มา '+ok+' • ❌ ขาด '+ab+' • 🟡 ลา '+lv+'\n';
+  s+='──────────────────\n';
+  t.people.forEach((p,i)=>{s+='`'+String(i+1).padStart(2,' ')+'.` '+p.name+' — '+m[p.status]+'\n';});
+  return s;
+}
 
-        // ตั้งค่า Choices.js
-        const element = document.getElementById('characterSelect');
-        const choices = new Choices(element, {
-            searchEnabled: true,
-            itemSelectText: '',
-            shouldSort: false,
-        });
+async function sendDiscord(){
+  const t=cur();if(!t)return;
+  const url=(t.webhook||'').trim();
+  if(!url){toast('หัวข้อนี้ยังไม่ได้ตั้งค่า Discord Webhook URL — กรุณาใส่ที่ช่องตั้งค่าด้านล่างก่อน','warn');return;}
+  if(!/discord(app)?\.com\/api\/webhooks\//.test(url)){toast('URL นี้ไม่ใช่ Discord Webhook URL ที่ถูกต้อง','warn');return;}
+  if(!t.people.length){toast('ยังไม่มีรายชื่อในหัวข้อนี้','warn');return;}
+  const report=buildReport(t);
+  const chunks=splitMsg(report,1900);
+  try{
+    for(const c of chunks){
+      const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:c})});
+      if(!res.ok)throw new Error('HTTP '+res.status);
+    }
+    toast('ส่งรายงานเข้า Discord เรียบร้อยแล้ว!','ok');
+  }catch(e){
+    toast('ส่งไม่สำเร็จ: '+e.message,'err');
+  }
+}
 
-        const form = document.getElementById('fineForm');
-        const historyList = document.getElementById('historyList');
-        const loadingStatus = document.getElementById('loadingStatus');
+function splitMsg(s,max){
+  const lines=s.split('\n');const out=[];let buf='';
+  for(const ln of lines){
+    if((buf+ln+'\n').length>max){out.push(buf);buf='';}
+    buf+=ln+'\n';
+  }
+  if(buf.trim())out.push(buf);
+  return out.length?out:[s];
+}
 
-        let isAdmin = false;
-        let globalMembersData = {};
-        let latestSnapshot = null;
-
-        // ฟังก์ชันอัปเดต Dropdown ชื่อตามบ้านที่เลือก
-        window.updateMemberDropdown = function() {
-            const selectedHouse = document.querySelector('input[name="house"]:checked');
-            choices.clearChoices();
-            
-            if (!selectedHouse) {
-                choices.setChoices([{ value: '', label: '-- กรุณาเลือกบ้านก่อน --', disabled: true, selected: true }], 'value', 'label', true);
-                return;
-            }
-
-            const houseName = selectedHouse.value;
-            const membersOfHouse = globalMembersData[houseName] || {};
-            
-            let choiceItems = [{ value: '', label: '-- เลือกชื่อสมาชิก --', disabled: true, selected: true }];
-            
-            Object.keys(membersOfHouse).forEach(memberId => {
-                choiceItems.push({ value: membersOfHouse[memberId].name, label: membersOfHouse[memberId].name, selected: false });
-            });
-
-            if (choiceItems.length === 1) {
-                choiceItems = [{ value: '', label: '-- ยังไม่มีสมาชิกในบ้านนี้ (เพิ่มในเมนูแอดมิน) --', disabled: true, selected: true }];
-            }
-
-            choices.setChoices(choiceItems, 'value', 'label', true);
-        }
-
-        // จัดการเปิด-ปิด Modal แอดมิน
-        window.openAdminModal = function() {
-            if (isAdmin) {
-                isAdmin = false;
-                document.getElementById('adminIcon').className = "fa-solid fa-lock mr-2 text-pink-400";
-                document.getElementById('adminBtnText').textContent = "โหมดแอดมิน";
-                document.getElementById('manageMemberBtn').classList.add('hidden');
-                document.getElementById('adminToggleBtn').classList.remove('border-pink-500', 'bg-pink-500/10');
-                triggerRealtimeLoad();
-                Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'ออกจากโหมดแอดมินแล้ว', showConfirmButton: false, timer: 2000, background: '#1e293b', color: '#f8fafc' });
-                return;
-            }
-            document.getElementById('adminModal').classList.remove('hidden');
-            setTimeout(() => document.getElementById('adminPasswordInput').focus(), 100);
-        }
-
-        window.closeAdminModal = function() {
-            document.getElementById('adminModal').classList.add('hidden');
-            document.getElementById('adminPasswordInput').value = '';
-        }
-
-        window.verifyAdmin = function(e) {
-            e.preventDefault();
-            const pass = document.getElementById('adminPasswordInput').value;
-            
-            if (pass === "admin1234") { // 🔑 รหัสผ่านแอดมิน
-                isAdmin = true;
-                closeAdminModal();
-                document.getElementById('adminIcon').className = "fa-solid fa-lock-open mr-2 text-emerald-400";
-                document.getElementById('adminBtnText').textContent = "ปิดโหมดแอดมิน";
-                document.getElementById('manageMemberBtn').classList.remove('hidden');
-                document.getElementById('adminToggleBtn').classList.add('border-pink-500', 'bg-pink-500/10');
-                triggerRealtimeLoad();
-                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'เข้าสู่โหมดแอดมินสำเร็จ!', showConfirmButton: false, timer: 2000, background: '#1e293b', color: '#f8fafc' });
-            } else {
-                Swal.fire({ icon: 'error', title: 'รหัสผ่านไม่ถูกต้อง!', confirmButtonColor: '#ec4899', background: '#1e293b', color: '#f8fafc' });
-                document.getElementById('adminPasswordInput').value = '';
-                document.getElementById('adminPasswordInput').focus();
-            }
-        }
-
-        // จัดการ Modal เพิ่ม/ลบสมาชิก
-        window.openMemberModal = function() {
-            document.getElementById('memberModal').classList.remove('hidden');
-            renderMemberManagementList();
-        }
-        window.closeMemberModal = function() {
-            document.getElementById('memberModal').classList.add('hidden');
-        }
-
-        // เพิ่มสมาชิกใหม่ลง Firebase
-        window.addNewMember = function(e) {
-            e.preventDefault();
-            const house = document.getElementById('targetHouse').value;
-            const name = document.getElementById('newMemberName').value.trim();
-
-            if (!name) return;
-
-            push(ref(db, `members/${house}`), { name: name }).then(() => {
-                document.getElementById('newMemberName').value = '';
-                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'เพิ่มสมาชิกเรียบร้อย', showConfirmButton: false, timer: 1500, background: '#1e293b', color: '#f8fafc' });
-            });
-        }
-
-        // ลบสมาชิกออกจาก Firebase
-        window.deleteMember = function(house, memberId) {
-            remove(ref(db, `members/${house}/${memberId}`)).then(() => {
-                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'ลบสมาชิกออกแล้ว', showConfirmButton: false, timer: 1500, background: '#1e293b', color: '#f8fafc' });
-            });
-        }
-
-        // แสดงรายชื่อใน Modal จัดการสมาชิก
-        function renderMemberManagementList() {
-            const listEl = document.getElementById('memberManagementList');
-            listEl.innerHTML = '';
-
-            let hasMember = false;
-            Object.keys(globalMembersData).forEach(house => {
-                const members = globalMembersData[house];
-                Object.keys(members).forEach(memberId => {
-                    hasMember = true;
-                    const memberName = members[memberId].name;
-                    listEl.innerHTML += `
-                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex justify-between items-center text-xs">
-                            <div>
-                                <span class="text-pink-400 font-bold mr-2">[${house}]</span>
-                                <span class="text-slate-200">${memberName}</span>
-                            </div>
-                            <button onclick="deleteMember('${house}', '${memberId}')" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    `;
-                });
-            });
-
-            if (!hasMember) {
-                listEl.innerHTML = '<div class="text-center py-4 text-slate-500 text-xs">ยังไม่มีสมาชิกในระบบ กรุณาเพิ่มด้านบน</div>';
-            }
-        }
-
-        window.deleteFine = function(id) {
-            if (!isAdmin) return;
-            Swal.fire({
-                title: 'คุณแน่ใจหรือไม่?', text: "ต้องการลบรายการค่าปรับนี้", icon: 'warning', showCancelButton: true,
-                confirmButtonColor: '#ef4444', cancelButtonColor: '#334155', confirmButtonText: 'ใช่, ลบเลย', cancelButtonText: 'ยกเลิก',
-                background: '#1e293b', color: '#f8fafc'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    remove(ref(db, 'fines/' + id)).then(() => {
-                        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'ลบรายการสำเร็จ', showConfirmButton: false, timer: 1500, background: '#1e293b', color: '#f8fafc' });
-                    });
-                }
-            });
-        }
-
-        // บันทึกค่าปรับ
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const house = document.querySelector('input[name="house"]:checked').value;
-            const name = document.getElementById('characterSelect').value;
-            const reason = document.getElementById('reason').value;
-            const amount = Number(document.getElementById('amount').value);
-
-            if (!name) {
-                Swal.fire({ icon: 'warning', title: 'กรุณาเลือกชื่อสมาชิก', background: '#1e293b', color: '#f8fafc' });
-                return;
-            }
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i>กำลังบันทึก...';
-
-            push(ref(db, 'fines'), {
-                house: house, name: name, reason: reason, amount: amount, timestamp: serverTimestamp()
-            }).then(() => {
-                form.reset();
-                choices.setChoiceByValue('');
-                updateMemberDropdown();
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>บันทึกค่าปรับ';
-                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'บันทึกค่าปรับเรียบร้อย!', showConfirmButton: false, timer: 2000, background: '#1e293b', color: '#f8fafc' });
-            }).catch((error) => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>บันทึกค่าปรับ';
-                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: error.message, background: '#1e293b', color: '#f8fafc' });
-            });
-        });
-
-        function triggerRealtimeLoad() {
-            if (!latestSnapshot) return;
-            
-            loadingStatus.textContent = 'ซิงค์ข้อมูลล่าสุดแล้ว';
-            historyList.innerHTML = '';
-
-            let totals = { "บ้านที่ 1": 0, "บ้านที่ 2": 0, "บ้านที่ 3": 0, "บ้านที่ 4": 0 };
-            let items = [];
-
-            latestSnapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                items.push({ id: childSnapshot.key, ...data });
-                if (totals[data.house] !== undefined) {
-                    totals[data.house] += Number(data.amount) || 0;
-                }
-            });
-
-            document.getElementById('totalHouse1').textContent = `$${totals["บ้านที่ 1"].toLocaleString()}`;
-            document.getElementById('totalHouse2').textContent = `$${totals["บ้านที่ 2"].toLocaleString()}`;
-            document.getElementById('totalHouse3').textContent = `$${totals["บ้านที่ 3"].toLocaleString()}`;
-            document.getElementById('totalHouse4').textContent = `$${totals["บ้านที่ 4"].toLocaleString()}`;
-
-            if (items.length === 0) {
-                historyList.innerHTML = '<div class="text-center py-8 text-slate-500 text-sm">ยังไม่มีข้อมูลค่าปรับในระบบ</div>';
-                return;
-            }
-
-            items.reverse();
-
-            items.forEach((item) => {
-                const houseShort = item.house.replace('บ้านที่ ', 'B');
-                const formattedAmount = Number(item.amount).toLocaleString();
-                const deleteBtnHTML = isAdmin ? `
-                    <button onclick="deleteFine('${item.id}')" class="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all ml-3 shadow" title="ลบรายการนี้">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                ` : '';
-
-                historyList.innerHTML += `
-                    <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3.5 flex items-center justify-between text-sm hover:border-slate-700 transition-all">
-                        <div class="flex items-center space-x-3 overflow-hidden">
-                            <div class="w-9 h-9 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 font-bold text-xs shrink-0">${houseShort}</div>
-                            <div class="truncate">
-                                <h4 class="font-semibold text-slate-200 text-xs md:text-sm truncate">${item.house} - ${item.name}</h4>
-                                <p class="text-slate-400 text-xs truncate">เหตุผล: ${item.reason}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center shrink-0">
-                            <span class="text-amber-400 font-bold text-sm md:text-base">$${formattedAmount}</span>
-                            ${deleteBtnHTML}
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // ดึงข้อมูล Fines แบบ Realtime
-        onValue(ref(db, 'fines'), (snapshot) => {
-            latestSnapshot = snapshot;
-            triggerRealtimeLoad();
-        });
-
-        // ดึงข้อมูล Members แยกตามบ้านแบบ Realtime
-        onValue(ref(db, 'members'), (snapshot) => {
-            globalMembersData = snapshot.val() || {};
-            updateMemberDropdown();
-            if(!document.getElementById('memberModal').classList.contains('hidden')) {
-                renderMemberManagementList();
-            }
-        });
-    </script>
+load();
+if(!data.topics.length){
+  data.topics.push({id:uid(),name:'ห้องเรียนตัวอย่าง',people:[
+    {id:uid(),name:'สมชาย ใจดี',status:'ok'},
+    {id:uid(),name:'สมหญิง ตั้งใจ',status:''}
+  ]});
+  data.active=data.topics[0].id;save();
+}
+render();
+</script>
 </body>
 </html>

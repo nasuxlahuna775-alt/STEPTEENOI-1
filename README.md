@@ -1,6 +1,6 @@
-# ระบบจัดการค่าปรับแก๊ง (Fine Management System)
+# เว็บเช็กชื่อ (Modern Attendance System)
 
-เว็บแอปหน้าเดียว (Single Page Web App) สำหรับบันทึกและจัดการค่าปรับ สร้างด้วย HTML + Tailwind CSS พร้อมไอคอน FontAwesome และ SweetAlert2
+เว็บแอปหน้าเดียว (Single Page Web App) สำหรับเช็กชื่อ / บันทึกการเข้าเรียน ออกแบบทันสมัยด้วย HTML + CSS ล้วน พร้อมไอคอน FontAwesome และฟอนต์ Kanit
 
 ## 🚀 การใช้งาน
 
@@ -23,7 +23,7 @@
 ```bash
 git init
 git add .
-git commit -m "Initial commit: fine management system"
+git commit -m "Initial commit: attendance system"
 git branch -M main
 git remote add origin https://github.com/<username>/<repo-name>.git
 git push -u origin main
@@ -32,10 +32,8 @@ git push -u origin main
 ## 🛠 เทคโนโลยีที่ใช้
 
 - HTML5
-- Tailwind CSS (CDN)
+- CSS3
 - FontAwesome 6
-- SweetAlert2
-- Choices.js
 - Google Fonts (Kanit)
 
 ## 📄 License
