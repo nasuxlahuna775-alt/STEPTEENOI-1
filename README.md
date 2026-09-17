@@ -29,12 +29,26 @@ git remote add origin https://github.com/<username>/<repo-name>.git
 git push -u origin main
 ```
 
+## 🔥 ทำให้เพื่อเห็นข้อมูลร่วมกัน (ตั้งค่า Firebase)
+
+> โดยค่าเริ่มต้น เว็บเก็บข้อมูลไว้ในเครื่องของแต่ละคนเท่านั้น (LocalStorage) เพื่อนจึงมองไม่เห็นข้อมูลเดียวกัน ถ้าอยากให้ทุกคนเห็นข้อมูลชุดเดียวกัน ให้ตั้งค่า Firebase ตามขั้นตอนด้านล่าง (ฟรี)
+
+1. ไปที่ <https://console.firebase.google.com> → **Add project** สร้างโปรเจกต์ใหม่ (จะปิด Google Analytics ก็ได้)
+2. เมนูซ้าย → **Build → Realtime Database** → **Create Database** → เลือกโซนใกล้คุณ → เลือก **Start in test mode** → Enable
+3. ไปที่ **Project settings** (ไอคอนเฟืองมุมขวาบน) → เลื่อนลงมาส่วน **Your apps** → กดไอคอน **</>** (Web) → ตั้งชื่อแอป → Register
+4. คัดลอกค่า `firebaseConfig` ที่ได้มา นำไปวางแทนในไฟล์ `index.html` ตรงส่วน `const FIREBASE_CONFIG = { ... }` (แทนค่า `PASTE_...` ทั้งหมด)
+   - สำคัญ: ต้องมีบรรทัด `databaseURL` ด้วย (เช่น `https://xxxx-default-rtdb.firebaseio.com`) — ถ้าค่า config ที่คัดมาไม่มี ให้คัดจากหน้า Realtime Database มาใส่เอง
+5. บันทึกและ push ขึ้น GitHub — เสร็จแล้ว! ทุกคนที่เปิดลิงก์เดียวกันจะเห็นและแก้ข้อมูลชุดเดียวกันแบบเรียลไทม์
+
+> ⚠️ **ข้อควรระวังเรื่องความปลอดภัย:** โหมด test mode เปิดให้ใครก็ตามที่มีลิงก์อ่าน/เขียนข้อมูลได้ เหมาะกับกลุ่มเพื่อนเล็ก ๆ เท่านั้น อย่าใส่ข้อมูลสำคัญ/ความลับ หากต้องการความปลอดภัยมากขึ้น ควรตั้ง Rules / ระบบล็อกอินเพิ่ม
+
 ## 🛠 เทคโนโลยีที่ใช้
 
 - HTML5
 - CSS3
 - FontAwesome 6
 - Google Fonts (Kanit)
+- Firebase Realtime Database (ทางเลือก — สำหรับแชร์ข้อมูลข้ามเครื่อง)
 
 ## 📄 License
 

@@ -125,7 +125,58 @@ footer{text-align:center;color:var(--mut);font-size:.85rem;padding:24px 0;}
 </div>
 <div id="toastWrap"></div>
 
+<!-- Firebase SDK (ใช้แชร์ข้อมูลข้ามเครื่อง เพื่อนเห็นข้อมูลชุดเดียวกัน) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <script>
+/* ============================================================
+   ⭐ ตั้งค่า Firebase ที่นี่
+   นำค่า config จากโปรเจกต์ Firebase ของคุณมาวางแทนค่า PASTE_...
+   ถ้ายังไม่ตั้งค่า เว็บจะทำงานแบบเก็บข้อมูลในเครื่องเท่านั้น (เพื่อนจะไม่เห็น)
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBwKXYJji4qQNoOvhcqpdBWHdpPLQ4sXJ0",
+  authDomain: "tarsaray1.firebaseapp.com",
+  databaseURL: "https://tarsaray1-default-rtdb.firebaseio.com",
+  projectId: "tarsaray1",
+  storageBucket: "tarsaray1.firebasestorage.app",
+  messagingSenderId: "782765725846",
+  appId: "1:782765725846:web:d645224c9942a0075acab7",
+  measurementId: "G-WF8T4DSX5D"
+};
+const DB_PATH = 'attendance/shared';   // เปลี่ยนได้ถ้าอยากแยกหลายกลุ่ม
+
+let fbRef=null, fbReady=false, applyingRemote=false;
+function firebaseConfigured(){
+  return FIREBASE_CONFIG.databaseURL && FIREBASE_CONFIG.databaseURL.indexOf('PASTE_')===-1;
+}
+function initFirebase(){
+  if(!firebaseConfigured()) return false;
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    fbRef = firebase.database().ref(DB_PATH);
+    fbRef.on('value', function(snap){
+      const remote = snap.val();
+      if(remote && remote.topics){
+        applyingRemote = true;
+        data = remote;
+        if(!data.topics) data.topics=[];
+        if(data.topics.length && !data.topics.find(t=>t.id===data.active)) data.active=data.topics[0].id;
+        localStorage.setItem(KEY, JSON.stringify(data));
+        render();
+        applyingRemote = false;
+      }
+      if(!fbReady){
+        fbReady = true;
+        if((!remote || !remote.topics) && data.topics.length){ fbRef.set(data); }
+        toast('เชื่อมต่อฐานข้อมูลออนไลน์แล้ว — เพื่อน ๆ จะเห็นข้อมูลชุดเดียวกัน','ok');
+      }
+    }, function(err){ toast('เชื่อมต่อฐานข้อมูลไม่สำเร็จ: '+err.message,'err'); });
+    return true;
+  }catch(e){ toast('ตั้งค่า Firebase ไม่สำเร็จ: '+e.message,'err'); return false; }
+}
+
 const KEY='checkname_data_v1';
 let data={topics:[],active:null};
 
@@ -168,7 +219,10 @@ function load(){
   if(!data.topics)data.topics=[];
   if(data.topics.length&&!data.topics.find(t=>t.id===data.active))data.active=data.topics[0].id;
 }
-function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+function save(){
+  localStorage.setItem(KEY,JSON.stringify(data));
+  if(fbRef && !applyingRemote){ fbRef.set(data); }
+}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function esc(s){return(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -344,6 +398,10 @@ if(!data.topics.length){
   data.active=data.topics[0].id;save();
 }
 render();
+initFirebase();
+if(!firebaseConfigured()){
+  setTimeout(function(){ toast('โหมดออฟไลน์: ข้อมูลเก็บเฉพาะในเครื่องนี้ — ตั้งค่า Firebase เพื่อให้เพื่อนเห็นข้อมูลร่วมกัน','warn'); },700);
+}
 </script>
 </body>
 </html>
